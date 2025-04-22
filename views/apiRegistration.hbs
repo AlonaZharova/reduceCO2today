@@ -1,0 +1,147 @@
+<body
+  class="bg-cover bg-no-repeat bg-center background-image flex flex-col items-center"
+>
+  <div class="container mx-auto px-4" style="display: block;">
+    <div
+      class="h-full w-full text-white flex justify-center items-center flex-col pt-12"
+    >
+      <div
+        class="flex items-center justify-center flex-col md:flex-row height: 100vh"
+        style="height: 100vh;"
+      >
+
+        <div class="h-full flex items-center justify-start flex-col" id="apidiv">
+          <h1 class="text-5xl font-bold mb-4">Register for our free API</h1>
+          <p>This API gives you access to forecast data of all our regions!</p>
+          <p>The following endpoints are available:</p>
+          <ul>
+            <li>/api/forecast</li>
+            <li>/api/region</li>
+          </ul>
+          <p>In the header the APIkey must be provided for each GET request as "apitoken"</p>
+
+          <p>To obtain an API key please register by providing username and email address.</p>
+
+          <form name="registration" onsubmit="validateFormGenerateAPIKey(event)" method="post">
+
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" style="color:black;">
+            <label for="username">Email</label>
+            <input type="text" name="email" id="email" style="color:black;">
+            
+            <input type="submit" value="Submit">
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+
+<script>
+  function validateFormGenerateAPIKey() {
+
+  // Prevent the default form submission
+  event.preventDefault();
+
+
+  let username = document.forms["registration"]["username"].value;
+  if (username == "") {
+    alert("Name must be filled out");
+    return false;
+  }
+  let email = document.forms["registration"]["email"].value;
+  if (email == "") {
+    alert("Name must be filled out");
+    return false;
+  }
+
+  // if form validation succeeds, proceed to make arequest for the api ke
+
+  let apidiv = document.getElementById("apidiv");
+
+  keyResult = fetch("/apikey", {
+    method: "POST",
+    headers: {
+            'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      username: username,
+      email: email
+    })
+  })
+  .then((res) => {
+    const httpstatus = res.status
+    return res.json().then((data) => ({
+      status: httpstatus,
+      data
+    }));
+  })
+  .then(({ status, data }) => {
+    if(data.apikey) {
+      apidiv.innerHTML += `<p>Please copy your API key and store it securely:${data.apikey}</p>`
+      
+    } else if (status == 409) {
+       apidiv.innerHTML += `
+       <div id="resetDiv">
+       <p>${data.message}.</p>
+       <p>To create a new API Key please enter your Email address and confirm with a link send to cour email account</p>
+       <form name="resetForm" method="POST" onsubmit="resetAPIKey(event)">
+        <label for="resetUsername">Username</label>
+        <input type="text" name="resetUsername" id="resetUsername" style="color: black;">
+        <label for="resetEmail">Email</label>
+        <input type="text" name="resetEmail" id="resetEmail" style="color: black;">
+        <input type="submit" value="Submit">
+       </form>
+       </div>
+       `
+
+    }
+  })
+  .catch((e) => {
+    console.log(e)
+  });
+  
+}
+
+function resetAPIKey() {
+
+  event.preventDefault();
+
+
+  let username = document.forms["resetForm"]["resetUsername"].value;
+  let email = document.forms["resetForm"]["resetEmail"].value;
+
+
+  fetch("/reset-apikey", {
+    method: "POST",
+    headers: {
+            'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      username: username,
+      email: email
+    })
+  })
+  .catch((e) => {
+    console.log(e);
+  });
+
+
+  let resetdiv = document.getElementById("resetDiv");
+  if (resetdiv) {
+                resetdiv.remove(); // Removes the element from the DOM
+                console.log("Div removed!");
+            };
+
+
+  let apidiv = document.getElementById("apidiv");
+
+  apidiv.innerHTML += `
+  <p>Please check your Email for your new API key!</p>
+  `
+
+
+}
+</script>
