@@ -71,6 +71,7 @@ server.js                           # Entry point that starts the Express server
 4. The server uses the Admin SDK to subscribe the token to the topic.
 5. The user receives targeted push notifications based on their subscription.
  
+ ---
 
 ## 🚀 Setting up the Local Development Environment
 
