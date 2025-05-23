@@ -110,6 +110,8 @@ server.js                           # Entry point that starts the Express server
 * Make sure you have [Node.js](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed.
 * Do **not** commit your `.env` file to version control.
 
+---
+
 📂 Environment Variables
  
 This project uses environment variables stored in a .env file. Create one at the root of your project with the following keys:
