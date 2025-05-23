@@ -14,7 +14,7 @@ async function fetchAndSaveMultipleRegions(regions) {
   console.log("Fetching and saving data for regions:", regions);
   try {
     for (const region of regions) {
-      const url = `https://us-central1-engaged-card-410714.cloudfunctions.net/new-function-1`;
+      const url = `https://us-central1-engaged-card-410714.cloudfunctions.net/new-function-world`;
       const response = await axios.post(url, { region }); // Pass the region in the request body
       // only create new when not empty
 
