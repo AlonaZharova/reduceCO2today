@@ -71,7 +71,47 @@ server.js                           # Entry point that starts the Express server
 4. The server uses the Admin SDK to subscribe the token to the topic.
 5. The user receives targeted push notifications based on their subscription.
  
+ ---
+
+## 🚀 Setting up the Local Development Environment
+
+1. **Install dependencies**  
+   This command installs all the required Node.js packages listed in `package.json`.
+   ```bash
+   npm install
+   ```
+
+2. **(Windows only) Allow scripts to run**  
+   If you are on Windows and see permission errors when running scripts, set the execution policy:
+   ```powershell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+   ```
+   You only need to do this once per machine.
+
+3. **Start the server**
+
+   * For normal use, start the server with:
+     ```bash
+     node server.js
+     ```
+     This runs the server once.
+
+   * For development, use:
+     ```bash
+     npm run dev
+     ```
+     This uses `nodemon` to automatically restart the server whenever you make changes to your code.  
+     **Use `npm run dev` when you are actively developing and want changes to take effect immediately without restarting the server manually.**
+
+4. **Open your browser**  
+   Visit [http://localhost:3000](http://localhost:3000) (or the port specified in your app) to view the application.
+
+⚠️ Note:  
+* Make sure you have [Node.js](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed.
+* Do **not** commit your `.env` file to version control.
+
 ---
+
 📂 Environment Variables
  
 This project uses environment variables stored in a .env file. Create one at the root of your project with the following keys:
