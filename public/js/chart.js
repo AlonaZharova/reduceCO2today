@@ -6,9 +6,80 @@ export function initializeChart(chartData) {
     // calculate shaded boxes
     let annotation_data = {}
 
-    
 
-    if(chartData.time_frames[0].start < chartData.time_frames[0].end) {
+    ////////////////////////////////////////////////////////////////////////////////////
+    class ForecastData {
+        constructor(labels, vals) {
+            this.labels = labels;
+            this.vals = vals;
+        }
+    }
+
+    // Function to fetch forecast data from the API
+    async function fetchForecastData() {
+        const forecast_url = "https://api.electricitymap.org/v3/carbon-intensity/forecast";
+        const HEADERS = {
+            "auth-token": "1goObmOnxYGNmbjlJ69k"
+        };
+
+        const params = new URLSearchParams(window.location.search);
+        const lat = params.get('lat');
+        const lng = params.get('lng');
+
+        // Now fetch forecast data using these
+        console.log("Received coordinates:", lat, lng);
+
+        // const forecast_params = {
+        //     lon: "13.40495400",
+        //     lat: "52.52000660",
+        //     horizonHours: 72
+        // };
+
+        const forecast_params = {
+            lon: lng,
+            lat: lat,
+            horizonHours: 72
+        };
+
+        // Build query string
+        const queryString = new URLSearchParams(forecast_params).toString();
+        const url = `${forecast_url}?${queryString}`;
+
+        try {
+            const response = await fetch(url, {
+                headers: HEADERS
+            });
+            const data = (await response.json()).forecast;
+
+            // Assuming data is an array of objects with carbonIntensity and datetime
+            const labels = data.map(item => {
+                const date = new Date(item.datetime);
+                // Format: "DD-MM HH"
+                return `${date.getDate()}-${date.getMonth() + 1} ${date.getHours()}`;
+            });
+            const vals = data.map(item => item.carbonIntensity);
+
+            // Create the class object
+            const chartData = new ForecastData(labels, vals);
+
+            console.log("forecast data in json is: ", chartData);
+
+            return chartData;
+
+        } catch (error) {
+            console.error("Error fetching forecast data:", error);
+        }
+    }
+
+    // Call the function to fetch and display the chart
+    // fetchForecastData();
+
+    console.log("Chart data for Yash", fetchForecastData())
+
+    ////////////////////////////////////////////////////////////////////////////////////
+
+
+    if (chartData.time_frames[0].start < chartData.time_frames[0].end) {
 
         annotation_data[`shadedRegionGood${0}`] = {
             type: 'box',
@@ -34,8 +105,8 @@ export function initializeChart(chartData) {
         }
     }
 
-     
-    if(chartData.time_frames[1].start < chartData.time_frames[1].end) {
+
+    if (chartData.time_frames[1].start < chartData.time_frames[1].end) {
 
         annotation_data[`shadedRegionBad${0}`] = {
             type: 'box',
@@ -62,7 +133,7 @@ export function initializeChart(chartData) {
 
 
     }
-    
+
     console.log("Chart data values", chartData.vals)
 
     const forecastChart = new Chart(ctx, {
@@ -78,7 +149,7 @@ export function initializeChart(chartData) {
             }]
         },
         options: {
-            plugins:{
+            plugins: {
                 legend:
                 {
                     labels: {
@@ -99,13 +170,13 @@ export function initializeChart(chartData) {
                         color: "white"
                     },
                     title: {
-                    display: true,
-                    text: 'Renewable energy generation (MWh)',  // Replace with your Y-axis label
-                    color: 'white',
-                    font: {
-                        size: 16
+                        display: true,
+                        text: 'Renewable energy generation (MWh)',  // Replace with your Y-axis label
+                        color: 'white',
+                        font: {
+                            size: 16
+                        }
                     }
-                }
                 },
                 x: {
                     grid: {
@@ -115,15 +186,15 @@ export function initializeChart(chartData) {
                         color: "white"
                     },
                     title: {
-                    display: true,
-                    text: 'Time',  // Replace with your Y-axis label
-                    color: 'white',
-                    font: {
-                        size: 16
+                        display: true,
+                        text: 'Time',  // Replace with your Y-axis label
+                        color: 'white',
+                        font: {
+                            size: 16
+                        }
                     }
                 }
-                }
-                
+
             }
         }
     });
