@@ -12,20 +12,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (marker) map.removeLayer(marker);
 
+    // Reverse geocode the coordinates to get the country or region name
     fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
       .then(res => res.json())
       .then(data => {
-        const country = data.address.country || "Unknown Location";
+        const country = data.address.country || "Unknown";
         console.log('Country:', country);
-        // marker = L.marker([lat, lng]).addTo(map)
-        //   .bindPopup(country)
-        //   .openPopup();
+
+        // ✅ Redirect to new page with coordinates in the query string
+        const targetUrl = `/Amprion?lat=${lat}&lng=${lng}`;
+        window.location.href = targetUrl;
+        console.log('Redirecting to:', targetUrl);
       })
-    //   .catch(err => {
-    //     console.error('Reverse geocoding error:', err);
-    //     marker = L.marker([lat, lng]).addTo(map)
-    //       .bindPopup("Location")
-    //       .openPopup();
-    //   });
+      .catch(err => {
+        console.error('Reverse geocoding error:', err);
+        // Fallback redirect
+        window.location.href = `/Amprion?lat=${lat}&lng=${lng}`;
+      });
   });
 });

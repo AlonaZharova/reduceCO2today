@@ -21,9 +21,23 @@ export function initializeChart(chartData) {
         const HEADERS = {
             "auth-token": "1goObmOnxYGNmbjlJ69k"
         };
+
+        const params = new URLSearchParams(window.location.search);
+        const lat = params.get('lat');
+        const lng = params.get('lng');
+
+        // Now fetch forecast data using these
+        console.log("Received coordinates:", lat, lng);
+
+        // const forecast_params = {
+        //     lon: "13.40495400",
+        //     lat: "52.52000660",
+        //     horizonHours: 72
+        // };
+
         const forecast_params = {
-            lon: "13.40495400",
-            lat: "52.52000660",
+            lon: lng,
+            lat: lat,
             horizonHours: 72
         };
 
@@ -56,16 +70,16 @@ export function initializeChart(chartData) {
             console.error("Error fetching forecast data:", error);
         }
     }
-    
+
     // Call the function to fetch and display the chart
     // fetchForecastData();
-    
+
     console.log("Chart data for Yash", fetchForecastData())
 
     ////////////////////////////////////////////////////////////////////////////////////
 
 
-    if(chartData.time_frames[0].start < chartData.time_frames[0].end) {
+    if (chartData.time_frames[0].start < chartData.time_frames[0].end) {
 
         annotation_data[`shadedRegionGood${0}`] = {
             type: 'box',
@@ -91,8 +105,8 @@ export function initializeChart(chartData) {
         }
     }
 
-     
-    if(chartData.time_frames[1].start < chartData.time_frames[1].end) {
+
+    if (chartData.time_frames[1].start < chartData.time_frames[1].end) {
 
         annotation_data[`shadedRegionBad${0}`] = {
             type: 'box',
@@ -119,7 +133,7 @@ export function initializeChart(chartData) {
 
 
     }
-    
+
     console.log("Chart data values", chartData.vals)
 
     const forecastChart = new Chart(ctx, {
@@ -135,7 +149,7 @@ export function initializeChart(chartData) {
             }]
         },
         options: {
-            plugins:{
+            plugins: {
                 legend:
                 {
                     labels: {
@@ -156,13 +170,13 @@ export function initializeChart(chartData) {
                         color: "white"
                     },
                     title: {
-                    display: true,
-                    text: 'Renewable energy generation (MWh)',  // Replace with your Y-axis label
-                    color: 'white',
-                    font: {
-                        size: 16
+                        display: true,
+                        text: 'Renewable energy generation (MWh)',  // Replace with your Y-axis label
+                        color: 'white',
+                        font: {
+                            size: 16
+                        }
                     }
-                }
                 },
                 x: {
                     grid: {
@@ -172,15 +186,15 @@ export function initializeChart(chartData) {
                         color: "white"
                     },
                     title: {
-                    display: true,
-                    text: 'Time',  // Replace with your Y-axis label
-                    color: 'white',
-                    font: {
-                        size: 16
+                        display: true,
+                        text: 'Time',  // Replace with your Y-axis label
+                        color: 'white',
+                        font: {
+                            size: 16
+                        }
                     }
                 }
-                }
-                
+
             }
         }
     });
