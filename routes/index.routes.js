@@ -150,16 +150,16 @@ router.post("/reset-apikey", async(req, res) => {
 
 
 // Manual test route for data fetching and saving
-// router.get("/test-fetch", async (req, res) => {
-//   console.log("Manual test fetch initiated at", new Date());
-//   try {
-//     await fetchAndSaveMultipleRegions(regions);
-//     res.send("Data fetching and saving initiated successfully.");
-//   } catch (error) {
-//     console.error("Error during test fetch:", error);
-//     res.status(500).send("Error during test fetch.");
-//   }
-// });
+router.get("/test-fetch", async (req, res) => {
+  console.log("Manual test fetch initiated at", new Date());
+  try {
+    await fetchAndSaveMultipleRegions(regions);
+    res.send("Data fetching and saving initiated successfully.");
+  } catch (error) {
+    console.error("Error during test fetch:", error);
+    res.status(500).send("Error during test fetch.");
+  }
+});
 
 router.get("/:region", async (req, res) => {
 
