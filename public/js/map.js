@@ -20,14 +20,14 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log('Country:', country);
 
         // ✅ Redirect to new page with coordinates in the query string
-        const targetUrl = `/Amprion?lat=${lat}&lng=${lng}`;
+        const targetUrl = `/Amprion?lat=${lat}&lng=${lng}&country=${country}`;
         window.location.href = targetUrl;
         console.log('Redirecting to:', targetUrl);
       })
       .catch(err => {
         console.error('Reverse geocoding error:', err);
         // Fallback redirect
-        window.location.href = `/Amprion?lat=${lat}&lng=${lng}`;
+        window.location.href = `/Amprion?lat=${lat}&lng=${lng}&country=${country}`;
       });
   });
 });
