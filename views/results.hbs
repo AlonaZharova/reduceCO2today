@@ -9,13 +9,21 @@
       <div class="flex flex-col justify-center items-center">
         <h1 class="text-4xl mb-5 text-center">Forecast for {{data.currentDate}}</h1>
         <h1 id="regionDisplay" class="text-4xl mb-5 text-center">Your region is:</h1>
-        <p class="w-3/5 md:w-1/2 text-center">{{data.forecastResult}}</p>
+        <!-- <p class="w-3/5 md:w-1/2 text-center">{{data.forecastResult}}</p>-->
+        <p class="w-3/5 md:w-1/2 text-center">To reduce carbon emissions, we recommend using electricity during green
+          time frames and to avoid using electricity during the red time frames</p>
       </div>
       <div class="mt-5 w-8/12 mx-auto">
         <canvas id="forecastChart"></canvas>
       </div>
+      <p class="text-xl mt-10 mb-8">
+        Carbon Intensity data provided by
+        <a href="https://www.electricitymaps.com/" target="_blank" class="text-blue-500 underline">
+          electricitymaps.com
+        </a>
+      </p>
 
-      <div id="subscribeControls" class="text-center mt-8 h-2/5 mb-10">
+      {{!-- <div id="subscribeControls" class="text-center mt-8 h-2/5 mb-10">
         <p class="m-3">You can leave your Email or WhatsApp below to subscribe
           to our daily recommendations</p>
         <form method="POST" action="" id="emailSubscriptionForm"
@@ -44,14 +52,14 @@
               class="bg-black text-white font-bold rounded-lg text-lg px-6 py-3 hover:bg-gray-800 transition-colors duration-300 mt-5 md:mt-0">Submit</button>
           </div>
         </form>
-      </div>
+      </div> --}}
     </div>
   </div>
   <div style="height: 800px;">
-
   </div>
 
-  <script src="/js/subscription.js"></script>
+  {{!--
+  <script src="/js/subscription.js"></script> --}}
   <script type="module">
     import { initializeChart } from "/js/chart.js"
 
