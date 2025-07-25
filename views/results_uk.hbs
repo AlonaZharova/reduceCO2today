@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reduce CO₂ - UK Results</title>
+
+    <link rel="stylesheet" href="/dist/styles.css">
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.2"></script>
+</head>
+
+<body class="bg-cover bg-no-repeat bg-bottom background-image flex flex-col items-center scale-50">
+
+  <!-- TODO: move control to hbs partials, move script to separate script file. -->
+
+    <div class="container mx-auto px-4" style="display: block;">
+        <div class="w-full text-white flex flex-col pt-12">
+
+            <div class="flex flex-col justify-center items-center">
+                <h1 class="text-xl mt-3 md:mb-5 text-center">Forecast for {{data.currentDate}}</h1>
+                <h1 id="regionDisplay" class="text-xl md:mb-5 text-center">Your region is: {{data.region}}</h1>
+                <p class="w-9/10 mt-3 md:w-1/2 text-center">{{data.forecastResult}}</p>
+                <p class="w-4/5 md:w-1/2 text-center">To reduce carbon emissions, we recommend using electricity during
+                    green
+                    time frames and to avoid using electricity during the red time frames</p>
+            </div>
+            <div class="md:mt-5 max-w-screen-lg w-full mx-auto md:px-6">
+                <canvas id="forecastChart"></canvas>
+            </div>
+            <p class="md:text-xl text-center mt-5 md:mt-10 md:mb-8">
+                Carbon Intensity data provided by
+                <a href="https://carbonintensity.org.uk/" target="_blank" class="text-blue-500 underline">
+                    carbonintensity.org.uk
+                </a>
+            </p>
+        </div>
+    </div>
+
+    {{!-- <script src="/js/subscription.js"></script> --}}
+    <script type="module">
+        import { initializeUKChart } from "/js/chart_uk.js"
+
+        // Get region ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const regionId = urlParams.get('regionId');
+
+        if (regionId) {
+            // Initialize UK chart with the region ID
+            initializeUKChart(parseInt(regionId));
+        } else {
+            // Display "No Data Available" if no region ID is provided
+            const canvas = document.getElementById('forecastChart');
+            const ctx = canvas.getContext('2d');
+
+            const noDataMessage = "Please select a UK region to view forecast data";
+
+            canvas.width = 800;
+            canvas.height = 200;
+
+            // Set font and alignment
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "rgba(84, 176, 226, 50)"; // Text color
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+
+            // Draw text in the center of the canvas
+            ctx.fillText(noDataMessage, canvas.width / 4, 80);
+        }
+    </script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const regionId = urlParams.get('regionId');
+
+        if (regionId) {
+            // UK regions mapping
+            const ukRegions = [
+                "North Scotland",
+                "South Scotland",
+                "North West England",
+                "North East England",
+                "Yorkshire",
+                "North Wales & Merseyside",
+                "South Wales",
+                "West Midlands",
+                "East Midlands",
+                "East England",
+                "South West England",
+                "South England",
+                "London",
+                "South East England",
+            ];
+
+            const regionName = ukRegions[parseInt(regionId) - 1];
+            if (regionName) {
+                const regionElement = document.getElementById('regionDisplay');
+                regionElement.textContent = `Your region is: ${regionName}`;
+            }
+        }
+    </script>
+
+</body>
+
+</html>

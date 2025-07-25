@@ -1,0 +1,61 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>reduceCO2today</title>
+
+  <!-- Stylesheets -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="/dist/styles.css">
+  <link rel="stylesheet" href="/stylesheets/style.css" />
+  <link rel="icon" href="/images/green-power.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart_world.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.2"></script>
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="/js/reactNav.js"></script>
+</head>
+
+<body>
+  <div class="full-page-wrapper  pt-12 md:pt-0">
+    <header>
+      <!-- Desktop nav: hidden on small screens, flex on md and up -->
+      <nav class="desktop-nav">
+        <a id="home" href="/">World</a>
+        <a id="germany" href="/germany">Germany</a>
+        <a id="uk" href="/uk">UK</a>
+        <a id="about" href="/about">About</a>
+        <a id="homeassistant" href="/homeassistant">Home Assistant</a>
+        <a id="api" href="/api-registration">API</a>
+      </nav>
+
+      <!-- Mobile nav: visible only on small screens -->
+      <div id="react-nav"></div>
+    </header>
+
+    <div class="flex-grow w-full max-w-screen-md mx-auto text-sm sm:text-base">
+      {{{body}}}
+    </div>
+  </div>
+
+
+</body>
+
+  <footer class="footer">
+    <div class="overlay"></div>
+    <div class="flex flex-row justify-center items-center text-white mb-5 mt-5">
+      <a href="https://www.hu-berlin.de/de/hu/impressum" target="_blank">Imprint</a>
+      <a class="ml-10" href="https://www.hu-berlin.de/de/hu/impressum/datenschutzerklaerung"
+        target="_blank">Privacy Policy</a>
+      <a id="contact" class="ml-10" href="/kontakt">Team</a>
+    </div>
+  </footer>
+
+</html>

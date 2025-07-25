@@ -1,0 +1,543 @@
+<body class="bg-cover bg-no-repeat bg-center background-image flex flex-col items-center">
+  <div class="container mx-auto px-4 py-8">
+    <div class="w-full text-white flex justify-center items-center flex-col pt-12 pb-32">
+      <div class="max-w-4xl w-full">
+
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+          <h1
+            class="text-5xl font-bold mb-6 bg-gradient-to-r from-customEight to-customThree bg-clip-text text-transparent">
+            Register for our Free API
+          </h1>
+          <p class="text-xl text-gray-200 mb-4">
+            Get access to real-time and forecasts of Renewable Energy Generation for Germany
+          </p>
+          <div class="w-24 h-1 bg-gradient-to-r from-customThree to-customEight mx-auto rounded-full"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="max-w-4xl mx-auto">
+
+          <!-- API Information Card -->
+          <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-2xl">
+            <h2 class="text-2xl font-semibold mb-6 text-customThree">API Features</h2>
+            <div class="space-y-4">
+              <div class="flex items-start space-x-3">
+                <div class="w-2 h-2 bg-customEight rounded-full mt-2 flex-shrink-0"></div>
+                <p class="text-gray-200">Real-time energy data for Germany</p>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-2 h-2 bg-customEight rounded-full mt-2 flex-shrink-0"></div>
+                <p class="text-gray-200">24-hour carbon intensity forecasts</p>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-2 h-2 bg-customEight rounded-full mt-2 flex-shrink-0"></div>
+                <p class="text-gray-200">Regional energy optimization</p>
+              </div>
+            </div>
+
+            <div class="mt-8 p-4 bg-customThree/20 rounded-lg border border-customThree/30">
+              <h3 class="text-lg font-semibold mb-3 text-customThree">Available Endpoints</h3>
+              <p class="text-sm text-gray-300 mb-4">Click on any endpoint to see detailed information</p>
+              <div class="space-y-3">
+                <!-- Green Endpoint -->
+                <div
+                  class="endpoint-card cursor-pointer bg-white/5 rounded-lg p-3 border border-white/10 hover:border-customThree/50 transition-all duration-200"
+                  onclick="toggleEndpointDetails('green')">
+                  <div class="flex justify-between items-center">
+                    <code class="text-customEight font-semibold">POST /green</code>
+                    <span class="text-gray-300 text-sm">Best times for renewable energy</span>
+                    <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200" fill="none"
+                      stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                  <div id="green-details" class="hidden mt-3 pt-3 border-t border-white/10">
+                    <div class="space-y-3 text-sm">
+                      <div>
+                        <h4 class="font-semibold text-customThree mb-1">Description</h4>
+                        <p class="text-gray-300">Returns the optimal times when electricity in the grid comes from the
+                          cleanest, most renewable sources. Perfect for scheduling energy-intensive activities.</p>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-customThree mb-1">Parameters</h4>
+                        <div class="bg-gray-800/50 rounded p-2">
+                          <code class="text-customEight">region</code> <span class="text-gray-400">(required)</span> -
+                          One of the following regions: Amprion, 50Hertz, TenneT, TransnetBW<br>
+                        </div>
+                        <div>
+                          <h4 class="font-semibold text-customThree mb-1">Example Request</h4>
+                          <div class="bg-gray-800/50 rounded p-2">
+                            <pre
+                              class="text-xs text-gray-300 whitespace-pre-wrap break-words">{<br>  "region": "Amprion"<br>}</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-customThree mb-1">Example Response</h4>
+                        <div class="bg-gray-800/50 rounded p-2">
+                          <pre
+                            class="text-xs text-gray-300 whitespace-pre-wrap break-words">{<br>  "message": "Forecast data generated successfully for region: Amprion",<br>  "start_green": "2025-07-16 11:00:00",<br>  "end_green": "2025-07-16 17:00:00"<br>}</pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Red Endpoint -->
+                <div
+                  class="endpoint-card cursor-pointer bg-white/5 rounded-lg p-3 border border-white/10 hover:border-customEight/50 transition-all duration-200"
+                  onclick="toggleEndpointDetails('red')">
+                  <div class="flex justify-between items-center">
+                    <code class="text-customEight font-semibold">POST /red</code>
+                    <span class="text-gray-300 text-sm">Avoid high carbon intensity times</span>
+                    <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200" fill="none"
+                      stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                  <div id="red-details" class="hidden mt-3 pt-3 border-t border-white/10">
+                    <div class="space-y-3 text-sm">
+                      <div>
+                        <h4 class="font-semibold text-customThree mb-1">Description</h4>
+                        <p class="text-gray-300">Identifies periods when electricity in the grid comes from the least
+                          clean, most carbon-intensive sources. Avoid these times for energy-intensive activities.</p>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-customThree mb-1">Parameters</h4>
+                        <div class="bg-gray-800/50 rounded p-2">
+                          <code class="text-customEight">region</code> <span class="text-gray-400">(required)</span> -
+                          One of the following regions: Amprion, 50Hertz, TenneT, TransnetBW<br>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-customThree mb-1">Example Request</h4>
+                        <div class="bg-gray-800/50 rounded p-2">
+                          <pre
+                            class="text-xs text-gray-300 whitespace-pre-wrap break-words">{<br>  "region": "Amprion"<br>}</pre>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-customThree mb-1">Example Response</h4>
+                        <div class="bg-gray-800/50 rounded p-2">
+                          <pre
+                            class="text-xs text-gray-300 whitespace-pre-wrap break-words">{<br>  "message": "Forecast data generated successfully for region: Amprion",<br>  "start_red": "2025-07-16 22:00:00",<br>  "end_red": "2025-07-17 01:00:00"<br>}</pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Forecast Endpoint -->
+                <div
+                  class="endpoint-card cursor-pointer bg-white/5 rounded-lg p-3 border border-white/10 hover:border-customEleven/50 transition-all duration-200"
+                  onclick="toggleEndpointDetails('forecast')">
+                  <div class="flex justify-between items-center">
+                    <code class="text-customEight font-semibold">POST /forecast</code>
+                    <span class="text-gray-300 text-sm">24-hour forecast with recommendations</span>
+                    <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200" fill="none"
+                      stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                  <div id="forecast-details" class="hidden mt-3 pt-3 border-t border-white/10">
+                    <div class="space-y-3 text-sm">
+                      <div>
+                        <h4 class="font-semibold text-customThree mb-1">Description</h4>
+                        <p class="text-gray-300">Provides a comprehensive 24-hour forecast with green and red time
+                          periods, carbon intensity predictions, and personalized recommendations for optimal energy
+                          usage.</p>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-customThree mb-1">Parameters</h4>
+                        <div class="bg-gray-800/50 rounded p-2">
+                          <code class="text-customEight">region</code> <span class="text-gray-400">(required)</span> -
+                          One of the following regions: Amprion, 50Hertz, TenneT, TransnetBW<br>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-customThree mb-1">Example Request</h4>
+                        <div class="bg-gray-800/50 rounded p-2">
+                          <pre
+                            class="text-xs text-gray-300 whitespace-pre-wrap break-words">{<br>  "region": "Amprion"<br>}</pre>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-customThree mb-1">Example Response</h4>
+                        <div class="bg-gray-800/50 rounded p-2">
+                          <pre
+                            class="text-xs text-gray-300 whitespace-pre-wrap break-words">{<br>  "message": "Forecast data generated successfully for region: 50Hertz",
+                          <br>  "forecast_result": "To avoid carbon emissions, we recommend using electricity in the following time frame/s: 10:00 to 16:00. We recommend to avoid using electricity in the following time frame/s: 20:00 to 23:00",
+                          <br>  "generation_data": [<br>    {<br>      "Wind Generation": 3723.0,<br>      "timestamp": "2025-07-16 01:00:00"<br>    },<br>    {<br>      "Wind Generation": 3647.0,<br>      "timestamp": "2025-07-16 02:00:00"<br>    },<br>    {<br>      "Wind Generation": 3565.75,<br>      "timestamp": "2025-07-16 03:00:00"<br>    }<br>  ]<br>}</pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Registration Form Section -->
+            <div class="mt-8 pt-8 border-t border-white/20" id="apidiv">
+              <h2 class="text-2xl font-semibold mb-6 text-center text-customThree">Get Your API Key</h2>
+              <p class="text-gray-200 mb-6 text-center">
+                Provide your details below to receive a free API key
+              </p>
+
+              <form name="registration" onsubmit="validateFormGenerateAPIKey(event)" method="post"
+                class="space-y-6 max-w-md mx-auto">
+
+                <div class="space-y-2">
+                  <label for="username" class="block text-sm font-medium text-gray-200">
+                    Username
+                  </label>
+                  <input type="text" name="username" id="username"
+                    class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-customThree focus:border-transparent transition-all duration-200"
+                    placeholder="Enter your username" required>
+                </div>
+
+                <div class="space-y-2">
+                  <label for="email" class="block text-sm font-medium text-gray-200">
+                    Email Address
+                  </label>
+                  <input type="email" name="email" id="email"
+                    class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-customThree focus:border-transparent transition-all duration-200"
+                    placeholder="Enter your email address" required>
+                </div>
+
+                <button type="submit"
+                  class="w-full bg-gradient-to-r from-customThree to-customEight hover:from-customEight hover:to-customThree text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-customThree focus:ring-offset-2 focus:ring-offset-transparent">
+                  Generate API Key
+                </button>
+          </form>
+
+              <div class="mt-6 p-4 bg-customNine/20 rounded-lg border border-customNine/30 max-w-md mx-auto">
+                <div class="flex items-start space-x-3">
+                  <svg class="w-5 h-5 text-customNine mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                      clip-rule="evenodd"></path>
+                  </svg>
+                  <div>
+                    <p class="text-sm text-customNine font-medium">API Key Security</p>
+                    <p class="text-xs text-gray-200 mt-1">
+                      Include your API key in the Authorization header as "Bearer &lt;your-key&gt;" for all requests.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+
+<script>
+  function validateFormGenerateAPIKey(event) {
+    // Prevent the default form submission
+    event.preventDefault();
+
+    let username = document.forms["registration"]["username"].value;
+    if (username == "") {
+      showNotification("Username must be filled out", "error");
+      return false;
+    }
+    let email = document.forms["registration"]["email"].value;
+    if (email == "") {
+      showNotification("Email must be filled out", "error");
+      return false;
+    }
+
+    // Show loading state
+    const submitButton = document.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    submitButton.innerHTML = `
+      <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Generating...
+    `;
+    submitButton.disabled = true;
+
+    // Make API request
+    fetch("/apikey", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username,
+        email: email
+      })
+    })
+      .then((res) => {
+        const httpstatus = res.status
+        return res.json().then((data) => ({
+          status: httpstatus,
+          data
+        }));
+      })
+      .then(({ status, data }) => {
+        if (data.apikey) {
+          showAPIKeySuccess(data.apikey);
+        } else if (status == 409) {
+          showExistingKeyForm(data.message);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+        showNotification("An error occurred. Please try again.", "error");
+      })
+      .finally(() => {
+        // Reset button state
+        submitButton.innerHTML = originalText;
+        submitButton.disabled = false;
+      });
+  }
+
+  function showNotification(message, type = "info") {
+    // Remove existing notifications
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+      existingNotification.remove();
+    }
+
+    const notification = document.createElement('div');
+    notification.className = `notification fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm ${type === 'error' ? 'bg-red-500 text-white' :
+      type === 'success' ? 'bg-green-500 text-white' :
+        'bg-blue-500 text-white'
+      }`;
+    notification.innerHTML = `
+      <div class="flex items-center space-x-2">
+        <span>${message}</span>
+        <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-white hover:text-gray-200">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+    `;
+    document.body.appendChild(notification);
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.remove();
+      }
+    }, 5000);
+  }
+
+  function showAPIKeySuccess(apiKey) {
+    const apidiv = document.getElementById("apidiv");
+    apidiv.innerHTML = `
+      <div class="text-center">
+        <div class="mb-6">
+          <svg class="w-16 h-16 text-customEleven mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <h2 class="text-2xl font-semibold text-customEleven mb-2">API Key Generated Successfully!</h2>
+          <p class="text-gray-200">Your API key has been created. Please copy it and store it securely.</p>
+        </div>
+        
+        <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-600 mb-6">
+          <label class="block text-sm font-medium text-gray-300 mb-2">Your API Key:</label>
+          <div class="flex items-center space-x-2">
+            <input type="text" value="${apiKey}" readonly class="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded text-customThree font-mono text-sm">
+            <button onclick="copyToClipboard('${apiKey}')" class="px-4 py-2 bg-customThree hover:bg-customFour text-white rounded transition-colors duration-200">
+              Copy
+            </button>
+          </div>
+        </div>
+        
+        <div class="space-y-4">
+          <div class="bg-customFour/20 rounded-lg p-4 border border-customFour/30">
+            <h3 class="text-lg font-semibold mb-2 text-customFour">Usage Example</h3>
+            <code class="text-sm text-gray-300 block">
+              curl -H "Authorization: Bearer ${apiKey}" <br>
+              https://api.reduceco2today.com/v1/green?latitude=52.5200&longitude=13.4050
+            </code>
+          </div>
+          
+          <button onclick="location.reload()" class="w-full bg-gradient-to-r from-customThree to-customFour hover:from-customEight hover:to-customEleven text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200">
+            Generate Another Key
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  function showExistingKeyForm(message) {
+    const apidiv = document.getElementById("apidiv");
+    apidiv.innerHTML = `
+      <div class="text-center">
+        <div class="mb-6">
+          <svg class="w-16 h-16 text-customNine mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+          </svg>
+          <h2 class="text-2xl font-semibold text-customNine mb-2">API Key Already Exists</h2>
+          <p class="text-gray-200">${message}</p>
+        </div>
+        
+        <div id="resetDiv" class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+          <p class="text-gray-200 mb-4">To create a new API key, please enter your username and email below:</p>
+          <form name="resetForm" method="POST" onsubmit="resetAPIKey(event)" class="space-y-4">
+            <div class="space-y-2">
+              <label for="resetUsername" class="block text-sm font-medium text-gray-200">Username</label>
+                              <input type="text" name="resetUsername" id="resetUsername" class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-customThree focus:border-transparent transition-all duration-200" placeholder="Enter your username" required>
+              </div>
+              <div class="space-y-2">
+                <label for="resetEmail" class="block text-sm font-medium text-gray-200">Email</label>
+                <input type="email" name="resetEmail" id="resetEmail" class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-customThree focus:border-transparent transition-all duration-200" placeholder="Enter your email address" required>
+            </div>
+            <button type="submit" class="w-full bg-gradient-to-r from-customNine to-customTwelve hover:from-customSeven hover:to-customSix text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200">
+              Reset API Key
+            </button>
+          </form>
+        </div>
+      </div>
+    `;
+  }
+
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      showNotification("API key copied to clipboard!", "success");
+    }).catch(() => {
+      showNotification("Failed to copy API key", "error");
+    });
+  }
+
+  function resetAPIKey(event) {
+    event.preventDefault();
+
+    let username = document.forms["resetForm"]["resetUsername"].value;
+    let email = document.forms["resetForm"]["resetEmail"].value;
+
+    if (!username || !email) {
+      showNotification("Please fill in all fields", "error");
+      return;
+    }
+
+    // Show loading state
+    const submitButton = document.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    submitButton.innerHTML = `
+      <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Resetting...
+    `;
+    submitButton.disabled = true;
+
+    fetch("/reset-apikey", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username,
+        email: email
+      })
+    })
+      .then((res) => {
+        if (res.ok) {
+          showResetSuccess();
+        } else {
+          throw new Error('Reset failed');
+        }
+    })
+      .catch((e) => {
+        console.log(e);
+        showNotification("Failed to reset API key. Please try again.", "error");
+      })
+      .finally(() => {
+        // Reset button state
+        submitButton.innerHTML = originalText;
+        submitButton.disabled = false;
+      });
+  }
+
+  function showResetSuccess() {
+    const apidiv = document.getElementById("apidiv");
+    apidiv.innerHTML = `
+      <div class="text-center">
+        <div class="mb-6">
+          <svg class="w-16 h-16 text-customEleven mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <h2 class="text-2xl font-semibold text-customEleven mb-2">API Key Reset Successfully!</h2>
+          <p class="text-gray-200">Your new API key has been sent to your email address.</p>
+        </div>
+        
+        <div class="bg-blue-900/30 rounded-lg p-4 border border-blue-400/30 mb-6">
+          <h3 class="text-lg font-semibold mb-2 text-blue-300">Next Steps</h3>
+          <ul class="text-sm text-gray-300 space-y-1 text-left">
+            <li>• Check your email for the new API key</li>
+            <li>• Update your applications with the new key</li>
+            <li>• The old key has been deactivated</li>
+          </ul>
+        </div>
+        
+                  <button onclick="location.reload()" class="w-full bg-gradient-to-r from-customThree to-customFour hover:from-customEight hover:to-customEleven text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200">
+            Generate Another Key
+          </button>
+      </div>
+    `;
+  }
+
+  // Endpoint interaction functions
+  function toggleEndpointDetails(endpoint) {
+    const detailsElement = document.getElementById(`${endpoint}-details`);
+    const card = detailsElement.closest('.endpoint-card');
+    const arrow = card.querySelector('svg');
+
+    // Toggle the details visibility
+    if (detailsElement.classList.contains('hidden')) {
+      // Close all other open endpoints first
+      document.querySelectorAll('.endpoint-card').forEach(card => {
+        const details = card.querySelector('[id$="-details"]');
+        const arrow = card.querySelector('svg');
+        if (!details.classList.contains('hidden')) {
+          details.classList.add('hidden');
+          arrow.style.transform = 'rotate(0deg)';
+        }
+      });
+
+      // Open the clicked endpoint
+      detailsElement.classList.remove('hidden');
+      arrow.style.transform = 'rotate(180deg)';
+
+      // Add active styling
+      card.classList.add('ring-2', 'ring-customThree/50');
+    } else {
+      // Close the endpoint
+      detailsElement.classList.add('hidden');
+      arrow.style.transform = 'rotate(0deg)';
+      card.classList.remove('ring-2', 'ring-customThree/50');
+    }
+  }
+
+  // Add hover effects for endpoint cards
+  document.addEventListener('DOMContentLoaded', function () {
+    const endpointCards = document.querySelectorAll('.endpoint-card');
+
+    endpointCards.forEach(card => {
+      card.addEventListener('mouseenter', function () {
+        if (!this.querySelector('[id$="-details"]').classList.contains('hidden')) {
+          return; // Don't add hover effect if already expanded
+        }
+        this.style.transform = 'translateY(-2px)';
+        this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.2)';
+      });
+
+      card.addEventListener('mouseleave', function () {
+        this.style.transform = 'translateY(0)';
+        this.style.boxShadow = 'none';
+      });
+    });
+  });
+</script>

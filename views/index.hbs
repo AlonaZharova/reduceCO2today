@@ -1,0 +1,53 @@
+<body class="bg-cover bg-no-repeat bg-center background-image flex flex-col items-center">
+
+    <div class="container mx-auto px-4" style="display: block;">
+        <div class="w-full text-white flex flex-col pt-12">
+            {{!-- <div class="flex items-center justify-center flex-col md:flex-row">
+                <h1 class="text-5xl font-bold mb-4">Welcome to a </h1>
+                <h1 class="text-5xl font-bold mb-4 md:ml-3">Cleaner</h1>
+                <h1 class="text-5xl font-bold mb-4 md:ml-3">Tomorrow!</h1>
+            </div> --}}
+
+            <div class="flex flex-col items-center">
+                <p class="text-xl md:mb-8">Join us to Reduce CO2 Emissions</p>
+                <h2 class="text-2xl font-bold mb-5 controls-to-hide md:text-3xl">Select your country</h2>
+                {{!-- <h2 class="text-2xl font-bold mb-8 controls-to-hide md:text-3xl">Forecast for {{ currentDate }}:
+                </h2> --}}
+
+                <!-- Map container -->
+                <div id="simple-map"></div>
+
+
+                <!-- Result area -->
+                <div id="regionResult" class="region-result text-white text-center mt-4 space-y-5"></div>
+
+                <!-- Subscribe form
+                <div id="subscribeControls" class="text-center mt-8 hidden h-2/5">
+                    <p class="m-3">Please leave your email below to subscribe to our daily recommendations</p>
+                    <form method="POST" action="" id="emailSubscriptionForm" class="px-5">
+                        <input name="email" type="email" id="emailInput"
+                            class="mx-3 bg-transparent border-2 border-white text-white font-bold rounded-lg text-lg px-6 py-2 hover:bg-white hover:text-gray-800 transition-colors duration-300"
+                            placeholder="Enter your email">
+                        <button type="submit"
+                            class="bg-black text-white font-bold rounded-lg text-lg px-6 py-2 hover:bg-gray-800 transition-colors duration-300">Submit</button>
+                    </form>
+                </div>
+                 -->
+
+            </div>
+            <p class="md:text-xl text-center md:mt-10 md:mb-8">
+                Carbon Intensity data provided by
+                <a href="https://www.electricitymaps.com/" target="_blank" class="text-blue-500 underline">
+                    electricitymaps.com
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <!-- handle map -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/js/map.js"></script>
+
+    <script type="module" src="/js/main2.js"></script>
+</body>
+

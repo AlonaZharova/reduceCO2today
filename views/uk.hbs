@@ -1,0 +1,184 @@
+
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+
+<body class="bg-cover bg-no-repeat bg-center background-image flex flex-col items-center">
+
+  <div class="container mx-auto px-4" style="display: block;">
+    <div class="w-full text-white flex flex-col pt-12 pb-12">
+
+      <div class="flex flex-col items-center">
+        <p class="text-xl md:mb-8">Join us to Reduce CO2 Emissions</p>
+        <h2 class="text-2xl font-bold mb-5 controls-to-hide ">Select your UK region</h2>
+
+        <!-- Leaflet Map -->
+        <div id="map"></div>
+
+        <div id="myModal"></div>
+
+        <!-- Region result text -->
+        <div id="regionResult" class="region-result text-white text-center mt-4 space-y-5"></div>
+
+        <!-- Legend -->
+        
+        <div
+          class="controls-to-hide w-full grid grid-cols-2 md:grid-cols-7 gap-2 mt-3 px-2 md:w-4/5">
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #BCC4C9;"></div>
+            <span class="text-xs text-xs">North East England</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #DCE1E4;"></div>
+            <span class="text-xs text-xs">North West England</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #54B0E2;"></div>
+            <span class="text-xs text-xs">South Scotland</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #A4B8D9;"></div>
+            <span class="text-xs text-xs">South East England</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #C4CBE3;"></div>
+            <span class="text-xs text-xs">North Wales & Merseyside</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #F7C9C4;"></div>
+            <span class="text-xs text-xs">London</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #F4E2CF;"></div>
+            <span class="text-xs text-xs">South West England</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #9FD6D2;"></div>
+            <span class="text-xs text-xs">West Midlands</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #FFE295;"></div>
+            <span class="text-xs text-xs">South England</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #D6C4E9;"></div>
+            <span class="text-xs text-xs">East England</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #B9E3C6;"></div>
+            <span class="text-xs text-xs">North Scotland</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #FFB7B2;"></div>
+            <span class="text-xs text-xs">Yorkshire</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #A6D5FA;"></div>
+            <span class="text-xs text-xs">East Midlands</span>
+          </div>
+          <div class="flex flex-row items-center mb-2">
+            <div class="w-4 h-4 md:w-6 md:h-6 rounded-md mr-2" style="background-color: #E7DAD5;"></div>
+            <span class="text-xs text-xs">South Wales</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script type="module">
+  import { initializeUKChart } from '/js/chart_uk.js';
+
+  // Define your custom colors (must match your Tailwind config)
+  const regionColors = {
+    "North East England": "#BCC4C9",     // customOne
+    "North West England": "#DCE1E4",     // customTwo
+    "South Scotland": "#54B0E2",         // customThree
+    "South East England": "#A4B8D9",     // customFour
+    "North Wales & Merseyside": "#C4CBE3", // customFive
+    "London": "#F7C9C4",                 // customSix
+    "South West England": "#F4E2CF",     // customSeven
+    "West Midlands": "#9FD6D2",          // customEight
+    "South England": "#FFE295",          // customNine
+    "East England": "#D6C4E9",           // customTen
+    "North Scotland": "#B9E3C6",         // customEleven
+    "Yorkshire": "#FFB7B2",              // customTwelve
+    "East Midlands": "#A6D5FA",          // customThirteen
+    "South Wales": "#E7DAD5"             // customFourteen
+  };
+
+  // do not change the order of the regions
+  const ukRegions = [
+    "North Scotland",
+    "South Scotland",
+    "North West England",
+    "North East England",
+    "Yorkshire",
+    "North Wales & Merseyside",
+    "South Wales",
+    "West Midlands",
+    "East Midlands",
+    "East England",
+    "South West England",
+    "South England",
+    "London",
+    "South East England",
+  ];
+
+  function initLeafletMap() {
+    const map = L.map('map', {
+      center: [54.546580, -3.6],
+      zoom: 5,
+      zoomControl: false,
+      attributionControl: false,
+      dragging: false,
+      scrollWheelZoom: false,
+      doubleClickZoom: false,
+      boxZoom: false,
+      keyboard: false
+    });
+
+    // Optional empty tile layer (transparent)
+    L.tileLayer('', { attribution: '' }).addTo(map);
+
+    fetch('https://s3.eu-west-2.amazonaws.com/carbonintensity.org.uk/DNORegions_pretty_test_country.geojson')
+      .then(res => res.json())
+      .then(geojson => {
+        L.geoJSON(geojson, {
+          filter: function (feature) {
+            const regionId = feature.properties?.regionid;
+            return regionId && regionId >= 1 && regionId <= 14;
+          },
+          style: function (feature) {
+            const regionId = feature.properties?.regionid;
+            const regionName = ukRegions[regionId - 1];
+            console.log(regionName, regionId);
+            const color = regionColors[regionName] || '#888';
+            return {
+              color: '#333',
+              weight: 2,
+              fillColor: color,
+              fillOpacity: 0.9
+            };
+          },
+          onEachFeature: function (feature, layer) {
+            const regionId = feature.properties?.regionid;
+            const regionName = ukRegions[regionId - 1];
+            layer.on('click', function () {
+              // Redirect to the UK results page with the region ID
+              console.log(regionId);
+              window.location.href = `/results_uk?regionId=${regionId}`;
+            });
+          }
+        }).addTo(map);
+      });
+  }
+
+  window.addEventListener('DOMContentLoaded', initLeafletMap);
+</script>
