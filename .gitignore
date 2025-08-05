@@ -1,6 +1,7 @@
 node_modules
 .env
 .credentials.env
+HA_Automation_webscraping.ipynb
 
 /public/images/alona.jpeg
 /public/images/member.png

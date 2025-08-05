@@ -224,7 +224,7 @@ main {
 
 #map {
    width: 80vw;
-   height: 55vh;
+   height: 60vh;
    max-height: 700px;
    background-color: transparent;
    z-index: 2;

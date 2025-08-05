@@ -12,8 +12,14 @@ async function fetchAndSaveMultipleRegions(regions) {
     console.log("Fetching and saving data for regions:", regions);
     try {
       for (const region of regions) {
-        const url = `https://us-central1-engaged-card-410714.cloudfunctions.net/new-function-world`;
-        const response = await axios.post(url, { region }); // Pass the region in the request body
+        const url = `https://function-1009525291166.europe-west10.run.app/forecast`;
+        // const response = await axios.post(url, { region }); // Pass the region in the request body
+        const response = await axios.post(url, { region }, {
+          headers: {
+            'Authorization': `Bearer ${process.env.API_BEARER_TOKEN}`
+          }
+        }); // Pass the region in the request body
+        // only create new when not empty
         // only create new when not empty
         
         if (response.data.forecast_result.length !== 0) {
@@ -266,7 +272,7 @@ async function sendALlEmailsToSubscribers() {
 cron.schedule('0 0 * * *', async () => {
     try {
         result = await fetchAndSaveMultipleRegions(regions);
-        await sendALlEmailsToSubscribers();
+        // await sendALlEmailsToSubscribers();
         console.log(result);
     } catch (error) {
         console.log(error);
