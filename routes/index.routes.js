@@ -14,7 +14,7 @@ async function fetchAndSaveMultipleRegions(regions) {
   console.log("Fetching and saving data for regions:", regions);
   try {
     for (const region of regions) {
-      const url = `https://function-wip-1009525291166.europe-west9.run.app/`;
+      const url = `https://function-1009525291166.europe-west10.run.app`;
       const response = await axios.post(url, { region }, {
         headers: {
           'Authorization': `Bearer ${process.env.API_BEARER_TOKEN}`
@@ -121,6 +121,22 @@ router.get("/kontakt", (req, res) => {
 
 router.get("/api-registration", (req, res) => {
   res.render("apiRegistration");
+});
+
+router.get("/tutorial1", (req, res) => {
+  res.render("tutorial1");
+});
+
+router.get("/tutorial2", (req, res) => {
+  res.render("tutorial2");
+});
+
+router.get("/tutorial3", (req, res) => {
+  res.render("tutorial3");
+});
+
+router.get("/tutorial4", (req, res) => {
+  res.render("tutorial4");
 });
 
 router.post("/apikey", async(req, res) => {

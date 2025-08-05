@@ -81,6 +81,30 @@ server.js                           # Entry point that starts the Express server
    npm install
    ```
 
+## 📊 Cron Jobs
+
+The application includes two automated cron jobs for data collection:
+
+### German Regions Cron Job (`controllers/cron-job.js`)
+- **Schedule**: Daily at 12:00 AM (midnight)
+- **Purpose**: Fetches carbon intensity data for German electricity grid regions (50Hertz, TenneT, TransnetBW, Amprion)
+- **Data Source**: Custom API endpoint with Bearer token authentication
+- **Email Notifications**: Sends daily email updates to subscribers based on their region preferences
+
+### World Data Cron Job (`controllers/world-cron-job.js`)
+- **Schedule**: Daily at 2:00 AM (to avoid conflicts with German regions job)
+- **Purpose**: Fetches carbon intensity forecast data for 200+ world zones using the ElectricityMap API
+- **Data Source**: ElectricityMap API (https://api.electricitymap.org/v3/carbon-intensity/forecast)
+- **Zones**: Includes major countries and sub-regions (US states, Canadian provinces, etc.)
+- **Rate Limiting**: Includes 100ms delays between requests to respect API limits
+
+### Manual Testing
+You can manually trigger the world data fetch for testing:
+```bash
+curl -X POST http://localhost:3000/api/carbon-forecast/fetch-world-data
+```
+This will fetch data for the first 5 zones only to avoid overwhelming the API during testing.
+
 2. **(Windows only) Allow scripts to run**  
    If you are on Windows and see permission errors when running scripts, set the execution policy:
    ```powershell

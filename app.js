@@ -3,8 +3,9 @@ require("dotenv").config();
 // ℹ️ Connects to the database
 require("./db");
 
-// strating cron job
+// starting cron jobs
 require("./controllers/cron-job");
+require("./controllers/world-cron-job");
 
 // Handles http requests (express is node js framework)
 const express = require("express");

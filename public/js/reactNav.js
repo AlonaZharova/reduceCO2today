@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
       activeIndex = 0;
     } else if (currentPath.includes('uk')) {
       activeIndex = 2;  // UK is at index 2
+    } else if (currentPath === '/tutorial1' || currentPath === '/tutorial2' || currentPath === '/tutorial3' || currentPath === '/tutorial4') {
+      activeIndex = 4;  // Home Assistant is at index 4
     } else {
       activeIndex = 1;
     }
