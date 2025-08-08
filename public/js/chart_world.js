@@ -55,8 +55,19 @@ export function initializeChart() {
         const params = new URLSearchParams(window.location.search);
         const lat = params.get('lat');
         const lng = params.get('lng');
+        const countryCode = params.get('countryCode');
 
-        const url = `/api/carbon-forecast?lat=${lat}&lon=${lng}&horizonHours=72`;
+        let url;
+        if (lat && lng) {
+            // Use coordinates if available
+            url = `/api/carbon-forecast?lat=${lat}&lon=${lng}&horizonHours=72`;
+        } else if (countryCode) {
+            // Use country code as fallback
+            url = `/api/carbon-forecast?zone=${countryCode}&horizonHours=72`;
+        } else {
+            console.error('No coordinates or country code provided');
+            return;
+        }
 
         try {
             const response = await fetch(url);

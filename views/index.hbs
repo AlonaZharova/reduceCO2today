@@ -14,9 +14,30 @@
                 {{!-- <h2 class="text-2xl font-bold mb-8 controls-to-hide md:text-3xl">Forecast for {{ currentDate }}:
                 </h2> --}}
 
+
                 <!-- Map container -->
                 <div id="simple-map"></div>
 
+                <!-- Country Dropdown -->
+                <div class="mb-6 w-full max-w-md mx-auto flex flex-col items-center">
+                    <div class="relative w-full max-w-lg mx-auto">
+
+                        <div id="DropdownContainer"></div>
+
+                        <!-- Dropdown menu -->
+                        <div id="countryDropdown"
+                            class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg hidden">
+                            <ul class="h-24 py-2 overflow-y-auto text-gray-700">
+                                {{#each countries}}
+                                    <li>
+                                        <div class="country-option px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                            data-value="{{code}}">{{name}}</div>
+                                    </li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Result area -->
                 <div id="regionResult" class="region-result text-white text-center mt-4 space-y-5"></div>
@@ -49,5 +70,9 @@
     <script src="/js/map.js"></script>
 
     <script type="module" src="/js/main2.js"></script>
-</body>
 
+
+    <!-- Country dropdown functionality -->
+    <script src="/js/dropdown.js"></script>
+    
+</body>
