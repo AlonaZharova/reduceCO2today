@@ -106,9 +106,34 @@ export function initializeChart() {
         }));
 
         const { greenBands, redBands } = findCarbonBands(forecastDataArr);
+        console.log("Green time zones:", greenBands);
+        console.log("Red time zones:", redBands);
+
+        // Expose green and red time zones in hidden HTML containers
+        const greenTimeContainer = document.getElementById("greenTimeZones");
+        const redTimeContainer = document.getElementById("redTimeZones");
+
+        if (greenTimeContainer) {
+            greenTimeContainer.innerHTML = ""; // Clear previous content
+            greenBands.forEach(band => {
+                const div = document.createElement("div");
+                div.textContent = `Start: ${band.start}, End: ${band.end}`;
+                greenTimeContainer.appendChild(div);
+            });
+        }
+
+        if (redTimeContainer) {
+            redTimeContainer.innerHTML = ""; // Clear previous content
+            redBands.forEach(band => {
+                const div = document.createElement("div");
+                div.textContent = `Start: ${band.start}, End: ${band.end}`;
+                redTimeContainer.appendChild(div);
+            });
+        }
 
         function labelToIndex(datetime) {
-            return chartData.rawDates.indexOf(datetime);
+            const index = chartData.rawDates.indexOf(datetime);
+            return index >= 0 ? index - 2 : index; // Yash (18/08/25): I am not aware of the reason but I need to offset he index by -2 to ensure that the plot is in sync with the forecast and calculated start and end time of green and red bands. The root cause is still unknown and needs to be addressed. The possible reason: the forecast array starts 2h before the current hour, whereas the plot starts it's labels from the current hour.
         }
 
         let annotation_data = {};
