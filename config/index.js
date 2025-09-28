@@ -25,6 +25,9 @@ const session = require("express-session");
 // https://www.npmjs.com/package/connect-mongo
 const MongoStore = require("connect-mongo");
 
+// ℹ️ Custom request logger middleware
+const requestLogger = require("../middleware/requestLogger");
+
 // Connects the mongo uri to maintain the same naming structure
 const MONGO_URI =
   process.env.MONGODB_URI
@@ -37,6 +40,8 @@ module.exports = (app) => {
   // In development environment the app logs
   app.use(logger("dev"));
 
+  // ℹ️ Custom request logger middleware to log GET requests to database
+  app.use(requestLogger);
 
   // To have access to `body` property in the request
   app.use(express.json());

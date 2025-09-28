@@ -3,6 +3,7 @@ const axios = require("axios");
 const router = express.Router();
 const RegionData = require("../models/RegionData");
 const APIKeys = require("../models/APIKeys");
+const Log = require("../models/Log");
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
@@ -137,6 +138,42 @@ router.get("/tutorial3", (req, res) => {
 
 router.get("/tutorial4", (req, res) => {
   res.render("tutorial4");
+});
+
+// Route to view logs page
+router.get("/logs-view", (req, res) => {
+  res.render("logs");
+});
+
+// Route to view logs (for debugging purposes)
+router.get("/logs", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const skip = (page - 1) * limit;
+    
+    const logs = await Log.find()
+      .sort({ timestamp: -1 })
+      .skip(skip)
+      .limit(limit);
+    
+    const totalLogs = await Log.countDocuments();
+    const totalPages = Math.ceil(totalLogs / limit);
+    
+    res.json({
+      logs,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalLogs,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching logs:', error);
+    res.status(500).json({ error: 'Failed to fetch logs' });
+  }
 });
 
 router.post("/apikey", async(req, res) => {
