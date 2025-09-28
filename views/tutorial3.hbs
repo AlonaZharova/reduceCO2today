@@ -1,13 +1,158 @@
 <body class="bg-cover bg-no-repeat bg-center background-image flex flex-col items-center">
     <div class="container mx-auto px-4 py-8">
-        <div class="w-full text-white flex justify-center items-center flex-col pt-12 pb-12">
-            <h1 class="text-4xl font-bold mb-12 text-customThree text-center">
-                How to integrate reduceCO2today.org into Home Assistant
-            </h1>
-            <p class="text-xl text-gray-200 mb-4 text-center">
-                Oops! I am not yet ready! Please give me some more time 🥲
-            </p>
-            <!-- Steps and images will go here -->
+        <div class="w-full text-white flex justify-center items-center flex-col pt-12 pb-32">
+            <div class="max-w-4xl w-full">
+
+                <!-- Header Section -->
+                <div class="text-center mb-12">
+                    <h1 class="text-3xl font-bold mb-6 bg-gradient-to-r from-customThree to-customEight bg-clip-text text-transparent">
+                        How to Use reduceCO2today.org with Home Assistant to Build Green Automations
+                    </h1>
+                    <p class="text-xl text-gray-200 mb-4">
+                        With reduceCO2today.org, you can easily connect real-time green energy forecasts to Home Assistant and build smart automations that secure our planet's future by reducing CO₂ emissions.
+                    </p>
+                    <div class="w-24 h-1 bg-gradient-to-r from-customThree to-customEight mx-auto rounded-full"></div>
+                </div>
+
+                <!-- Tutorial Content -->
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-2xl">
+
+                    <!-- Prerequisites Section -->
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-semibold mb-4 text-customThree">1️⃣ Prerequisites</h2>
+                        <div class="space-y-3">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-customEight rounded-full mt-2 flex-shrink-0"></div>
+                                <p class="text-gray-200">Home Assistant running (e.g., on Docker, Raspberry Pi, or any supported platform)</p>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-customEight rounded-full mt-2 flex-shrink-0"></div>
+                                <p class="text-gray-200">Access to your <code>configuration.yaml</code> file</p>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-customEight rounded-full mt-2 flex-shrink-0"></div>
+                                <p class="text-gray-200">
+                                    Obtain your API key from <a href="http://localhost:3000/api-registration" class="text-customThree underline">reduceCO2today.org</a>
+                                </p>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-customEight rounded-full mt-2 flex-shrink-0"></div>
+                                <p class="text-gray-200">
+                                    Know your TSO Region in Germany (<a href="http://localhost:3000/germany" class="text-customThree underline">Amprion, TennT, TransnetBW, or 50Hertz</a>)
+                                </p>
+                            </div>  
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-semibold mb-4 text-customThree">2️⃣ Add the reduceCO2today Sensor</h2>
+                        <p class="text-gray-300 mb-4">
+                            First, we create a <strong>RESTful sensor</strong> that will fetch the green time recommendation from the API.
+                        </p>
+                        <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-600 mb-4">
+                            <p class="text-gray-300 mb-3">
+                                📂 <strong>Steps:</strong>
+                                <ol class="list-decimal list-inside">
+                                    <li>Open your Home Assistant <code>configuration.yaml</code> file in an editor.</li>
+                                    <li>Paste the sensor configuration (download file: <a href="/tutorial3_yaml_files/green_time_sensor.yaml" class="text-customThree underline">green_time_sensor.yaml</a>).</li>
+                                    <li>Save and restart Home Assistant.</li>
+                                </ol>
+                            </p>
+                            <p class="text-gray-300">
+                                🔍 After restart, check in <strong>Developer Tools → States</strong> for:
+                                <ul class="list-disc list-inside">
+                                    <li><code>sensor.green_time_forecast</code> (raw text)</li>
+                                    <li><code>sensor.green_time_start</code> (start time of the green period)</li>
+                                    <li><code>sensor.green_time_end</code> (end time of the green period)</li>
+                                </ul>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-semibold mb-4 text-customThree">3️⃣ Create a Dummy Washing Machine (for testing)</h2>
+                        <p class="text-gray-300 mb-4">
+                            If you don’t have a real smart plug or washing machine entity, create a <strong>dummy switch</strong>.
+                        </p>
+                        <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-600 mb-4">
+                            <p class="text-gray-300">
+                                📂 Add the configuration (download file: <a href="/tutorial3_yaml_files/dummy_washing_machine.yaml" class="text-customThree underline">dummy_washing_machine.yaml</a>) to your <code>configuration.yaml</code>, then restart.
+                            </p>
+                            <p class="text-gray-300">
+                                You should now see <code>switch.washing_machine</code> in <strong>Developer Tools → States</strong>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-semibold mb-4 text-customThree">4️⃣ Build the Green Automation</h2>
+                        <p class="text-gray-300 mb-4">
+                            Now we create an automation that <strong>turns on the washing machine at the start of the green period</strong>.
+                        </p>
+                        <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-600 mb-4">
+                            <p class="text-gray-300">
+                                📂 Download file: <a href="/tutorial3_yaml_files/automation_green_washing_machine.yaml" class="text-customThree underline">automation_green_washing_machine.yaml</a> and add it via:
+                                <ul class="list-disc list-inside">
+                                    <li><strong>Option A:</strong> Paste it directly into <code>automations.yaml</code></li>
+                                    <li><strong>Option B:</strong> Go to <strong>Settings → Automations & Scenes → Add Automation → Edit in YAML</strong> and paste the code (without the top <code>automation:</code> key).</li>
+                                </ul>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-semibold mb-4 text-customThree">5️⃣ Add Automation to Dashboard</h2>
+                        <p class="text-gray-300 mb-4">
+                            To make it visible:
+                        </p>
+                        <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-600 mb-4">
+                            <ol class="list-decimal list-inside text-gray-300">
+                                <li>Go to <strong>Dashboards → Edit Dashboard → Add Card</strong></li>
+                                <li>Choose <strong>Entities card</strong></li>
+                                <li>Add <code>automation.green_energy_automation</code></li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Step 6 -->
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-semibold mb-4 text-customThree">6️⃣ Test the Setup</h2>
+                        <p class="text-gray-300 mb-4">
+                            If the current time matches the forecasted <em>green start time</em>, the washing machine will automatically turn on. You’ll also see a notification confirming that the automation ran.
+                        </p>
+                    </div>
+
+                    <!-- Conclusion -->
+                    <div class="mt-8 pt-8 border-t border-white/20">
+                        <h2 class="text-2xl font-semibold mb-4 text-customThree">That’s it!</h2>
+                        <p class="text-gray-300">
+                            You’ve successfully connected <strong>reduceCO2today.org</strong> with Home Assistant and built your first <strong>green automation</strong>.
+                        </p>
+                        <p class="text-gray-300">
+                            From here, you can:
+                            <ul class="list-disc list-inside">
+                                <li>Extend the same logic to dishwashers, EV charging, or heating systems</li>
+                                <li>Combine with energy dashboards for full CO₂ tracking</li>
+                                <li>Share your automations with the community</li>
+                            </ul>
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Navigation -->
+                <div class="mt-8 text-center">
+                    <a href="/homeassistant" class="inline-block bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200">
+                        ← Back to Tutorials
+                    </a>
+                </div>
+
+            </div>
         </div>
     </div>
+    <script type="module" src="/js/main2.js"></script>
 </body>

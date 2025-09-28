@@ -1,0 +1,31 @@
+# green_time_sensor.yaml
+sensor:
+  - platform: rest
+    name: green_time_forecast
+    resource: "https://function-1009525291166.europe-west10.run.app/forecast"
+    method: POST
+    headers:
+      Authorization: "Bearer 37f1"
+      Content-Type: "application/json"
+    payload: '{"region": "Amprion"}'
+    value_template: >
+      {% set match = value_json.forecast_result | regex_search("recommend using electricity in the following time frame/s: ([\d:]+ to [\d:]+)", ignorecase=True) %}
+      {{ match if match else "unavailable" }}
+    scan_interval: 3600
+
+template:
+  - sensor:
+      - name: "green_time_start"
+        state: >
+          {% if states('sensor.green_time_forecast') not in ['unknown', 'unavailable', ''] %}
+            {{ states('sensor.green_time_forecast').split(' to ')[0] }}
+          {% else %}
+            unavailable
+          {% endif %}
+      - name: "green_time_end"
+        state: >
+          {% if states('sensor.green_time_forecast') not in ['unknown', 'unavailable', ''] %}
+            {{ states('sensor.green_time_forecast').split(' to ')[1] }}
+          {% else %}
+            unavailable
+          {% endif %}
