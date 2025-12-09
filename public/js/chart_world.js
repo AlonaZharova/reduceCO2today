@@ -1,41 +1,106 @@
+/**
+ * Finds green (low carbon) and red (high carbon) bands on a per-day basis.
+ * Each day's bands are calculated using that day's statistics for practical daily planning.
+ * 
+ * @param {Array} forecastData - Array of objects: { datetime: ISO string, carbonIntensity: number }
+ * @returns {Object} { 
+ *   greenBands: Array<{start: string, end: string, day: string}>, 
+ *   redBands: Array<{start: string, end: string, day: string}>,
+ *   dayStats: Array<{day: string, avgIntensity: number, minIntensity: number, maxIntensity: number}>
+ * }
+ */
 function findCarbonBands(forecastData) {
-    const intensities = forecastData.map(d => d.carbonIntensity);
-    const mean = intensities.reduce((a, b) => a + b, 0) / intensities.length;
-    const std = Math.sqrt(intensities.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / intensities.length);
+    // Group data by day
+    const dayGroups = {};
+    
+    forecastData.forEach(d => {
+        const date = new Date(d.datetime);
+        const dayKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        
+        if (!dayGroups[dayKey]) {
+            dayGroups[dayKey] = [];
+        }
+        dayGroups[dayKey].push(d);
+    });
 
-    const labeled = forecastData.map((d, i) => ({
-        ...d,
-        z: (d.carbonIntensity - mean) / std,
-        idx: i
-    }));
+    const allGreenBands = [];
+    const allRedBands = [];
+    const dayStats = [];
 
-    function findBands(arr, predicate) {
-        const bands = [];
-        let band = [];
-        for (let i = 0; i < arr.length; i++) {
-            if (predicate(arr[i])) {
-                if (band.length === 0 || arr[i].idx === arr[i - 1]?.idx + 1) {
-                    band.push(arr[i]);
+    // Process each day independently
+    Object.keys(dayGroups).forEach(dayKey => {
+        const dayData = dayGroups[dayKey];
+
+        console.log(`\n=== Processing ${dayKey} ===`);
+        console.log(`Hours in this day: ${dayData.length}`);
+        
+        // Calculate statistics for this day only
+        const intensities = dayData.map(d => d.carbonIntensity);
+        const mean = intensities.reduce((a, b) => a + b, 0) / intensities.length;
+        const std = Math.sqrt(intensities.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / intensities.length);
+        const minIntensity = Math.min(...intensities);
+        const maxIntensity = Math.max(...intensities);
+
+        console.log(`Day mean: ${mean.toFixed(1)}, Day std: ${std.toFixed(1)}`);
+        console.log(`Day range: ${minIntensity} - ${maxIntensity}`);
+
+        // Store day statistics for context
+        dayStats.push({
+            day: dayKey,
+            avgIntensity: Math.round(mean),
+            minIntensity: Math.round(minIntensity),
+            maxIntensity: Math.round(maxIntensity),
+            date: new Date(dayData[0].datetime)
+        });
+
+        // Label each hour with z-score and index
+        const labeled = dayData.map((d, i) => ({
+            ...d,
+            z: (d.carbonIntensity - mean) / std,
+            idx: forecastData.indexOf(d) // Global index in original array
+        }));
+
+        // Find consecutive bands within this day
+        function findBands(arr, predicate) {
+            const bands = [];
+            let band = [];
+            
+            for (let i = 0; i < arr.length; i++) {
+                if (predicate(arr[i])) {
+                    if (band.length === 0 || arr[i].idx === band[band.length - 1].idx + 1) {
+                        band.push(arr[i]);
+                    } else {
+                        if (band.length >= 3) bands.push(band);
+                        band = [arr[i]];
+                    }
                 } else {
                     if (band.length >= 3) bands.push(band);
-                    band = [arr[i]];
+                    band = [];
                 }
-            } else {
-                if (band.length >= 3) bands.push(band);
-                band = [];
             }
+            if (band.length >= 3) bands.push(band);
+            
+            return bands.map(b => ({
+                start: b[0].datetime,
+                end: b[b.length - 1].datetime,
+                day: dayKey,
+                avgIntensity: Math.round(b.reduce((sum, item) => sum + item.carbonIntensity, 0) / b.length)
+            }));
         }
-        if (band.length >= 3) bands.push(band);
-        return bands.map(b => ({
-            start: b[0].datetime,
-            end: b[b.length - 1].datetime
-        }));
-    }
 
-    const greenBands = findBands(labeled, d => d.z <= -1);
-    const redBands = findBands(labeled, d => d.z >= 1);
+        // Find green and red bands for this day
+        const dayGreenBands = findBands(labeled, d => d.z <= -1);
+        const dayRedBands = findBands(labeled, d => d.z >= 1);
 
-    return { greenBands, redBands };
+        allGreenBands.push(...dayGreenBands);
+        allRedBands.push(...dayRedBands);
+    });
+
+    return { 
+        greenBands: allGreenBands, 
+        redBands: allRedBands,
+        dayStats: dayStats.sort((a, b) => a.date - b.date)
+    };
 }
 
 export function initializeChart() {
@@ -105,9 +170,18 @@ export function initializeChart() {
             carbonIntensity: chartData.vals[i]
         }));
 
-        const { greenBands, redBands } = findCarbonBands(forecastDataArr);
+        const { greenBands, redBands, dayStats } = findCarbonBands(forecastDataArr);
+
         console.log("Green time zones:", greenBands);
         console.log("Red time zones:", redBands);
+        console.log("Day statistics:", dayStats);
+
+        // Display day quality context (can be shown in UI or console)
+        dayStats.forEach(stat => {
+            const date = stat.date;
+            const dayLabel = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            console.log(`${dayLabel}: Avg ${stat.avgIntensity} gCO2/kWh (Range: ${stat.minIntensity}-${stat.maxIntensity})`);
+        });
 
         // Expose green and red time zones in hidden HTML containers
         const greenTimeContainer = document.getElementById("greenTimeZones");
@@ -199,7 +273,12 @@ export function initializeChart() {
 
         dayChangeIndices.forEach((idx, i) => {
             const date = new Date(chartData.rawDates[idx]);
+            const dayKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            const dayStat = dayStats.find(s => s.day === dayKey);
+            
             const dayLabel = `${date.getDate()} ${date.toLocaleString('en-US', { month: 'short' })}`;
+            const qualityLabel = dayStat ? `\n(Avg: ${dayStat.avgIntensity})` : '';
+            
             annotation_data[`daySeparator${i}`] = {
                 type: 'line',
                 xMin: idx,
@@ -208,7 +287,7 @@ export function initializeChart() {
                 borderWidth: 2,
                 borderDash: [4, 4],
                 label: {
-                    content: dayLabel,
+                    content: dayLabel + qualityLabel,
                     enabled: true,
                     color: 'white',
                     backgroundColor: 'rgba(0, 0, 0, 0)',
