@@ -1,12 +1,18 @@
 /**
- * Finds green (low carbon) and red (high carbon) bands on a per-day basis.
- * Each day's bands are calculated using that day's statistics for practical daily planning.
+ * Finds green (low carbon) and red (high carbon) bands on a per-day basis using absolute values.
+ * Uses a sliding 3-hour window to find the actual best and worst periods each day.
+ * 
+ * GREEN BANDS: 3-hour window with the LOWEST average carbon intensity
+ * RED BANDS: 3-hour window with the HIGHEST average carbon intensity
+ * 
+ * This guarantees bands cover the actual extremes (not just statistical outliers).
+ * Each day gets exactly one green band and one red band (if enough hours available).
  * 
  * @param {Array} forecastData - Array of objects: { datetime: ISO string, carbonIntensity: number }
  * @returns {Object} { 
- *   greenBands: Array<{start: string, end: string, day: string}>, 
- *   redBands: Array<{start: string, end: string, day: string}>,
- *   dayStats: Array<{day: string, avgIntensity: number, minIntensity: number, maxIntensity: number}>
+ *   greenBands: Array<{start: string, end: string, day: string, avgIntensity: number}>, 
+ *   redBands: Array<{start: string, end: string, day: string, avgIntensity: number}>,
+ *   dayStats: Array<{day: string, avgIntensity: number, minIntensity: number, maxIntensity: number, date: Date}>
  * }
  */
 function findCarbonBands(forecastData) {
@@ -34,15 +40,14 @@ function findCarbonBands(forecastData) {
         console.log(`\n=== Processing ${dayKey} ===`);
         console.log(`Hours in this day: ${dayData.length}`);
         
-        // Calculate statistics for this day only
+        // Calculate statistics for this day
         const intensities = dayData.map(d => d.carbonIntensity);
         const mean = intensities.reduce((a, b) => a + b, 0) / intensities.length;
-        const std = Math.sqrt(intensities.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / intensities.length);
         const minIntensity = Math.min(...intensities);
         const maxIntensity = Math.max(...intensities);
 
-        console.log(`Day mean: ${mean.toFixed(1)}, Day std: ${std.toFixed(1)}`);
-        console.log(`Day range: ${minIntensity} - ${maxIntensity}`);
+        console.log(`Day average: ${mean.toFixed(1)} gCO2/kWh`);
+        console.log(`Day range: ${minIntensity} - ${maxIntensity} gCO2/kWh`);
 
         // Store day statistics for context
         dayStats.push({
@@ -53,47 +58,65 @@ function findCarbonBands(forecastData) {
             date: new Date(dayData[0].datetime)
         });
 
-        // Label each hour with z-score and index
-        const labeled = dayData.map((d, i) => ({
+        // Add global index to each data point for chart positioning
+        const labeled = dayData.map(d => ({
             ...d,
-            z: (d.carbonIntensity - mean) / std,
-            idx: forecastData.indexOf(d) // Global index in original array
+            idx: forecastData.indexOf(d)
         }));
 
-        // Find consecutive bands within this day
-        function findBands(arr, predicate) {
-            const bands = [];
-            let band = [];
+        // Helper function: Find best consecutive 3-hour window
+        // Uses a sliding window approach to find the optimal period
+        function findBestWindow(arr, windowSize, compareFn) {
+            if (arr.length < windowSize) {
+                console.log(`Not enough hours (${arr.length}) for ${windowSize}-hour window`);
+                return null;
+            }
             
-            for (let i = 0; i < arr.length; i++) {
-                if (predicate(arr[i])) {
-                    if (band.length === 0 || arr[i].idx === band[band.length - 1].idx + 1) {
-                        band.push(arr[i]);
-                    } else {
-                        if (band.length >= 3) bands.push(band);
-                        band = [arr[i]];
-                    }
-                } else {
-                    if (band.length >= 3) bands.push(band);
-                    band = [];
+            let bestWindow = null;
+            let bestAvg = null;
+            
+            // Slide the window across all possible positions
+            for (let i = 0; i <= arr.length - windowSize; i++) {
+                const window = arr.slice(i, i + windowSize);
+                const avgIntensity = window.reduce((sum, item) => sum + item.carbonIntensity, 0) / windowSize;
+                
+                // Check if this window is better than current best
+                if (bestAvg === null || compareFn(avgIntensity, bestAvg)) {
+                    bestAvg = avgIntensity;
+                    bestWindow = window;
                 }
             }
-            if (band.length >= 3) bands.push(band);
             
-            return bands.map(b => ({
-                start: b[0].datetime,
-                end: b[b.length - 1].datetime,
-                day: dayKey,
-                avgIntensity: Math.round(b.reduce((sum, item) => sum + item.carbonIntensity, 0) / b.length)
-            }));
+            return bestWindow;
         }
 
-        // Find green and red bands for this day
-        const dayGreenBands = findBands(labeled, d => d.z <= -1);
-        const dayRedBands = findBands(labeled, d => d.z >= 1);
+        // Find GREEN BAND: 3-hour window with LOWEST average carbon intensity
+        const greenWindow = findBestWindow(labeled, 3, (current, best) => current < best);
+        
+        if (greenWindow) {
+            const greenBand = {
+                start: greenWindow[0].datetime,
+                end: greenWindow[greenWindow.length - 1].datetime,
+                day: dayKey,
+                avgIntensity: Math.round(greenWindow.reduce((sum, item) => sum + item.carbonIntensity, 0) / greenWindow.length)
+            };
+            allGreenBands.push(greenBand);
+            console.log(`✓ Green band: ${greenBand.start} to ${greenBand.end} (Avg: ${greenBand.avgIntensity} gCO2/kWh)`);
+        }
 
-        allGreenBands.push(...dayGreenBands);
-        allRedBands.push(...dayRedBands);
+        // Find RED BAND: 3-hour window with HIGHEST average carbon intensity
+        const redWindow = findBestWindow(labeled, 3, (current, best) => current > best);
+        
+        if (redWindow) {
+            const redBand = {
+                start: redWindow[0].datetime,
+                end: redWindow[redWindow.length - 1].datetime,
+                day: dayKey,
+                avgIntensity: Math.round(redWindow.reduce((sum, item) => sum + item.carbonIntensity, 0) / redWindow.length)
+            };
+            allRedBands.push(redBand);
+            console.log(`✓ Red band: ${redBand.start} to ${redBand.end} (Avg: ${redBand.avgIntensity} gCO2/kWh)`);
+        }
     });
 
     return { 
@@ -207,7 +230,8 @@ export function initializeChart() {
 
         function labelToIndex(datetime) {
             const index = chartData.rawDates.indexOf(datetime);
-            return index >= 0 ? index - 2 : index; // Yash (18/08/25): I am not aware of the reason but I need to offset he index by -2 to ensure that the plot is in sync with the forecast and calculated start and end time of green and red bands. The root cause is still unknown and needs to be addressed. The possible reason: the forecast array starts 2h before the current hour, whereas the plot starts it's labels from the current hour.
+            console.log(`Looking for datetime: ${datetime}, found at index: ${index}`);
+            return index;
         }
 
         let annotation_data = {};
