@@ -1,41 +1,216 @@
-function findCarbonBands(forecastData) {
-    const intensities = forecastData.map(d => d.carbonIntensity);
-    const mean = intensities.reduce((a, b) => a + b, 0) / intensities.length;
-    const std = Math.sqrt(intensities.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / intensities.length);
-
-    const labeled = forecastData.map((d, i) => ({
-        ...d,
-        z: (d.carbonIntensity - mean) / std,
-        idx: i
-    }));
-
-    function findBands(arr, predicate) {
-        const bands = [];
-        let band = [];
-        for (let i = 0; i < arr.length; i++) {
-            if (predicate(arr[i])) {
-                if (band.length === 0 || arr[i].idx === arr[i - 1]?.idx + 1) {
-                    band.push(arr[i]);
-                } else {
-                    if (band.length >= 3) bands.push(band);
-                    band = [arr[i]];
-                }
-            } else {
-                if (band.length >= 3) bands.push(band);
-                band = [];
-            }
+/**
+ * Find exactly one band (green or red) within a 24-hour period.
+ * Always returns a band - guaranteed to find one.
+ * 
+ * @param {Array} dayData - List of forecast data for a single day with z-scores
+ * @param {boolean} isGreen - If true, find green band (lowest z-scores), else find red band (highest z-scores)
+ * @returns {Object|null} Band with start and end times (always returns a band)
+ */
+function findBestBandInDay(dayData, isGreen = true) {
+    if (!dayData || dayData.length < 3) {
+        // If less than 3 hours of data, return the entire period as the band
+        if (dayData && dayData.length > 0) {
+            return {
+                start: dayData[0].datetime,
+                end: dayData[dayData.length - 1].datetime
+            };
         }
-        if (band.length >= 3) bands.push(band);
-        return bands.map(b => ({
-            start: b[0].datetime,
-            end: b[b.length - 1].datetime
-        }));
+        return null;
     }
 
-    const greenBands = findBands(labeled, d => d.z <= -1);
-    const redBands = findBands(labeled, d => d.z >= 1);
+    // Sort by z-score: ascending for green (lowest carbon), descending for red (highest carbon)
+    const sortedData = [...dayData].sort((a, b) => isGreen ? a.z - b.z : b.z - a.z);
 
-    return { greenBands, redBands };
+    /**
+     * Find consecutive bands from candidates sorted by index.
+     */
+    function findConsecutiveBand(candidates, minLength = 3) {
+        const candidatesByIdx = [...candidates].sort((a, b) => a.idx - b.idx);
+        
+        const bands = [];
+        let currentBand = [];
+        
+        for (const d of candidatesByIdx) {
+            if (currentBand.length === 0) {
+                currentBand.push(d);
+            } else if (d.idx === currentBand[currentBand.length - 1].idx + 1) {
+                currentBand.push(d);
+            } else {
+                if (currentBand.length >= minLength) {
+                    bands.push(currentBand);
+                }
+                currentBand = [d];
+            }
+        }
+        
+        if (currentBand.length >= minLength) {
+            bands.push(currentBand);
+        }
+        
+        return bands;
+    }
+
+    // Try progressively larger candidate pools until we find a valid band
+    for (const poolSize of [6, 12, 18, dayData.length]) {
+        const candidates = sortedData.slice(0, Math.min(poolSize, sortedData.length));
+        const bands = findConsecutiveBand(candidates, 3);
+        
+        if (bands.length > 0) {
+            // Select the best band (lowest average z for green, highest for red)
+            let bestBand = null;
+            let bestScore = isGreen ? Infinity : -Infinity;
+            
+            for (const band of bands) {
+                const avgZ = band.reduce((sum, d) => sum + d.z, 0) / band.length;
+                if (isGreen && avgZ < bestScore) {
+                    bestScore = avgZ;
+                    bestBand = band;
+                } else if (!isGreen && avgZ > bestScore) {
+                    bestScore = avgZ;
+                    bestBand = band;
+                }
+            }
+            
+            if (bestBand) {
+                return {
+                    start: bestBand[0].datetime,
+                    end: bestBand[bestBand.length - 1].datetime
+                };
+            }
+        }
+    }
+
+    // Fallback: if still no band found, take the best 3 consecutive hours by score
+    // Find all possible 3-hour windows and pick the best one
+    const dayByIdx = [...dayData].sort((a, b) => a.idx - b.idx);
+    let bestWindow = null;
+    let bestScore = isGreen ? Infinity : -Infinity;
+    
+    for (let i = 0; i < dayByIdx.length - 2; i++) {
+        // Check if these 3 hours are consecutive
+        if (dayByIdx[i + 1].idx === dayByIdx[i].idx + 1 && 
+            dayByIdx[i + 2].idx === dayByIdx[i + 1].idx + 1) {
+            const window = [dayByIdx[i], dayByIdx[i + 1], dayByIdx[i + 2]];
+            const avgZ = window.reduce((sum, d) => sum + d.z, 0) / 3;
+            
+            if (isGreen && avgZ < bestScore) {
+                bestScore = avgZ;
+                bestWindow = window;
+            } else if (!isGreen && avgZ > bestScore) {
+                bestScore = avgZ;
+                bestWindow = window;
+            }
+        }
+    }
+    
+    if (bestWindow) {
+        return {
+            start: bestWindow[0].datetime,
+            end: bestWindow[bestWindow.length - 1].datetime
+        };
+    }
+    
+    // Ultimate fallback: just return the first/last 3 hours based on type
+    const bestThree = sortedData.slice(0, 3);
+    const bestThreeByIdx = [...bestThree].sort((a, b) => a.idx - b.idx);
+    
+    return {
+        start: bestThreeByIdx[0].datetime,
+        end: bestThreeByIdx[bestThreeByIdx.length - 1].datetime
+    };
+}
+
+/**
+ * Find green and red carbon bands based on carbon intensity z-scores.
+ * For 72-hour forecasts, calculates one green and one red band per 24-hour period.
+ * Groups by the timestamp's own timezone (preserves the offset from the data).
+ * 
+ * @param {Array} forecastData - List of forecast data with carbonIntensity values
+ * @returns {Object} Dictionary with greenBands and redBands (one per day for multi-day forecasts)
+ */
+function findCarbonBands(forecastData) {
+    if (!forecastData || forecastData.length === 0) {
+        return { greenBands: [], redBands: [] };
+    }
+
+    // Parse datetime strings and group by day using the timestamp's own timezone
+    const days = {};
+    for (let i = 0; i < forecastData.length; i++) {
+        const d = forecastData[i];
+        const dtStr = d.datetime || '';
+        
+        let dayKey;
+        try {
+            // Parse ISO format datetime while preserving the original timezone
+            // Extract date part from ISO string to preserve timezone
+            if (dtStr.includes('T')) {
+                // Extract date part (YYYY-MM-DD) from ISO string
+                // This preserves the date in the original timezone context
+                const dateMatch = dtStr.match(/^(\d{4}-\d{2}-\d{2})/);
+                if (dateMatch) {
+                    dayKey = dateMatch[1];
+                } else {
+                    // Fallback: parse as Date and extract date components
+                    const dt = new Date(dtStr);
+                    dayKey = `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, '0')}-${String(dt.getUTCDate()).padStart(2, '0')}`;
+                }
+            } else {
+                // Non-ISO format, try to parse
+                const dt = new Date(dtStr);
+                dayKey = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+            }
+        } catch (e) {
+            // Fallback: group by index (24 hours per day)
+            dayKey = `day_${Math.floor(i / 24)}`;
+        }
+        
+        if (!days[dayKey]) {
+            days[dayKey] = [];
+        }
+        days[dayKey].push({ ...d, globalIdx: i });
+    }
+
+    const greenBands = [];
+    const redBands = [];
+    
+    // Process each day separately
+    const sortedDayKeys = Object.keys(days).sort();
+    for (const dayKey of sortedDayKeys) {
+        const dayData = days[dayKey];
+        
+        if (dayData.length < 3) {
+            continue;
+        }
+        
+        // Calculate mean and standard deviation for this day
+        const intensities = dayData.map(d => d.carbonIntensity);
+        const mean = intensities.reduce((a, b) => a + b, 0) / intensities.length;
+        const variance = intensities.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / intensities.length;
+        const std = Math.sqrt(variance) || 1; // Avoid division by zero
+        
+        // Create labeled data with z-scores for this day
+        const labeledDay = dayData.map((d, i) => ({
+            ...d,
+            z: (d.carbonIntensity - mean) / std,
+            idx: i // Local index within the day
+        }));
+        
+        // Find one green band and one red band for this day
+        const greenBand = findBestBandInDay(labeledDay, true);
+        const redBand = findBestBandInDay(labeledDay, false);
+        
+        if (greenBand) {
+            greenBands.push(greenBand);
+        }
+        if (redBand) {
+            redBands.push(redBand);
+        }
+    }
+    
+    return {
+        greenBands: greenBands,
+        redBands: redBands
+    };
 }
 
 export function initializeChart() {
@@ -136,23 +311,44 @@ export function initializeChart() {
             return index >= 0 ? index - 2 : index; // Yash (18/08/25): I am not aware of the reason but I need to offset he index by -2 to ensure that the plot is in sync with the forecast and calculated start and end time of green and red bands. The root cause is still unknown and needs to be addressed. The possible reason: the forecast array starts 2h before the current hour, whereas the plot starts it's labels from the current hour.
         }
 
+        // Helper function to check if two bands overlap
+        function bandsOverlap(band1, band2) {
+            const start1 = new Date(band1.start).getTime();
+            const end1 = new Date(band1.end).getTime();
+            const start2 = new Date(band2.start).getTime();
+            const end2 = new Date(band2.end).getTime();
+            return !(end1 <= start2 || end2 <= start1);
+        }
+
         let annotation_data = {};
 
+        // Render green bands first
         greenBands.forEach((band, idx) => {
             annotation_data[`shadedRegionGood${idx}`] = {
                 type: 'box',
                 xMin: labelToIndex(band.start),
                 xMax: labelToIndex(band.end),
-                backgroundColor: 'rgba(72, 236, 89, 0.25)'
+                backgroundColor: 'rgba(72, 236, 89, 0.25)',
+                borderWidth: 0
             };
         });
 
+        // Render red bands, but check for overlaps and adjust opacity/color if needed
         redBands.forEach((band, idx) => {
+            // Check if this red band overlaps with any green band
+            const overlapsGreen = greenBands.some(greenBand => bandsOverlap(band, greenBand));
+            
+            // If overlapping, use a darker red or adjust rendering to avoid yellow blend
+            const bgColor = overlapsGreen 
+                ? 'rgba(200, 50, 80, 0.3)' // Slightly darker red when overlapping
+                : 'rgba(255, 99, 132, 0.25)'; // Normal red
+            
             annotation_data[`shadedRegionBad${idx}`] = {
                 type: 'box',
                 xMin: labelToIndex(band.start),
                 xMax: labelToIndex(band.end),
-                backgroundColor: 'rgba(255, 99, 132, 0.25)'
+                backgroundColor: bgColor,
+                borderWidth: 0
             };
         });
 
