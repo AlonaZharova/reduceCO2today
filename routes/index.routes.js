@@ -129,7 +129,7 @@ router.get("/tutorial1", (req, res) => {
 });
 
 router.get("/tutorial2", (req, res) => {
-  res.render("tutorial2");
+  res.redirect("/homeassistant");
 });
 
 router.get("/tutorial3", (req, res) => {

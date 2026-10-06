@@ -1,0 +1,74 @@
+# green_band_sensors.yaml
+# Replace YOUR_API_KEY and the country code before use.
+# Country codes match the API docs, for example "DE", "FR", or "US".
+# Coordinates work too: '{"lat": "52.52", "lng": "13.40"}'
+sensor:
+  - platform: rest
+    name: green_band_forecast
+    resource: "https://function-1009525291166.europe-west10.run.app/carbon-bands"
+    method: POST
+    headers:
+      Authorization: "Bearer YOUR_API_KEY"
+      Content-Type: "application/json"
+    payload: '{"country": "DE"}'
+    value_template: "{{ value_json.message }}"
+    json_attributes:
+      - greenBands
+    scan_interval: 3600
+
+template:
+  - sensor:
+      - name: "green_band_1_start"
+        device_class: timestamp
+        state: >
+          {% set bands = state_attr('sensor.green_band_forecast', 'greenBands') %}
+          {% if bands is iterable and bands | length > 0 %}
+            {{ bands[0].start }}
+          {% else %}
+            unavailable
+          {% endif %}
+      - name: "green_band_1_end"
+        device_class: timestamp
+        state: >
+          {% set bands = state_attr('sensor.green_band_forecast', 'greenBands') %}
+          {% if bands is iterable and bands | length > 0 %}
+            {{ bands[0].end }}
+          {% else %}
+            unavailable
+          {% endif %}
+      - name: "green_band_2_start"
+        device_class: timestamp
+        state: >
+          {% set bands = state_attr('sensor.green_band_forecast', 'greenBands') %}
+          {% if bands is iterable and bands | length > 1 %}
+            {{ bands[1].start }}
+          {% else %}
+            unavailable
+          {% endif %}
+      - name: "green_band_2_end"
+        device_class: timestamp
+        state: >
+          {% set bands = state_attr('sensor.green_band_forecast', 'greenBands') %}
+          {% if bands is iterable and bands | length > 1 %}
+            {{ bands[1].end }}
+          {% else %}
+            unavailable
+          {% endif %}
+      - name: "green_band_3_start"
+        device_class: timestamp
+        state: >
+          {% set bands = state_attr('sensor.green_band_forecast', 'greenBands') %}
+          {% if bands is iterable and bands | length > 2 %}
+            {{ bands[2].start }}
+          {% else %}
+            unavailable
+          {% endif %}
+      - name: "green_band_3_end"
+        device_class: timestamp
+        state: >
+          {% set bands = state_attr('sensor.green_band_forecast', 'greenBands') %}
+          {% if bands is iterable and bands | length > 2 %}
+            {{ bands[2].end }}
+          {% else %}
+            unavailable
+          {% endif %}

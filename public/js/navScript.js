@@ -41,7 +41,7 @@ const navFunction = () => {
     } else if (currentPath === "/kontakt") {
       contactElement?.classList.add('active-site');
       console.log("Added active-site to contact");
-    } else if (currentPath === "/homeassistant" || currentPath === "/tutorial1" || currentPath === "/tutorial2" || currentPath === "/tutorial3" || currentPath === "/tutorial4") {
+    } else if (currentPath === "/homeassistant" || currentPath === "/tutorial1" || currentPath === "/tutorial3" || currentPath === "/tutorial4") {
       haElement?.classList.add('active-site');
       console.log("Added active-site to homeassistant");
     } else if (currentPath === "/germany") {
