@@ -1,4 +1,4 @@
-# 🌱 Reduce CO2 Today – Information Systems Project
+# 🌱 Reduce CO2 Today 
  
 This is a full-stack web application built to TODO.
  
